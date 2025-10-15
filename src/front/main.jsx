@@ -1,27 +1,30 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'  // Global styles for your application
-import { RouterProvider } from "react-router-dom";  // Import RouterProvider to use the router
-import { router } from "./routes";  // Import the router configuration
-import { StoreProvider } from './hooks/useGlobalReducer';  // Import the StoreProvider for global state management
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Signin from './pages/signin'
+import Registro from './pages/registro'
+import { StoreProvider } from './hooks/useGlobalReducer'
 
 const Main = () => {
-    
-    if(! import.meta.env.VITE_BACKEND_URL ||  import.meta.env.VITE_BACKEND_URL == "") return (
-        <React.StrictMode>
-              <BackendURL/ >
-        </React.StrictMode>
-        );
+    // Do not block rendering when VITE_BACKEND_URL is missing in development.
+    // If you need a strict check, add a visible notice instead of returning nothing.
+    if(! import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_BACKEND_URL == "") {
+        console.warn('VITE_BACKEND_URL is not set. Running in development mode without backend.');
+    }
+
     return (
-        <React.StrictMode>  
-            {/* Provide global state to all components */}
-            <StoreProvider> 
-                {/* Set up routing for the application */} 
-                <RouterProvider router={router}>
-                </RouterProvider>
+        <React.StrictMode>
+            <StoreProvider>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path="/" element={<Signin/>} />
+                        <Route path="/registro" element={<Registro/>} />
+                    </Routes>
+                </BrowserRouter>
             </StoreProvider>
         </React.StrictMode>
-    );
+    )
 }
 
 // Render the Main component into the root DOM element.
