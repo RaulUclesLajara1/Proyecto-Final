@@ -1,0 +1,19 @@
+.poppins-semibold {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+}
+.inter-texto {
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.texto-verde{
+    color: rgb(12, 224, 12)
+}
+.enlace{
+    text-color: rgb(39, 103, 175);
+    underlined: true;
+}
