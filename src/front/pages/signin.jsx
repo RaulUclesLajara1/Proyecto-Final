@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom"
 import { useState } from "react"
-import imagen from "../imagenes/image.png"
+import imagen from "../assets/image.png"
 
 const Signin = () => {
     const [formData, setFormData] = useState({
@@ -29,8 +29,8 @@ const Signin = () => {
                 <div className="col">
                     <h5 className="inter-texto text-start ms-2">Iniciar sesión</h5>
                     <form className="p-2">
-                        <input type="email" id="email" value={formData.email} onChange={handleChange} placeholder="tucorreo@dominio.com" className="form-control"></input>
-                        <input type="password" id="password" value={formData.password} onChange={handleChange} placeholder="password" className="form-control mt-2"></input>
+                        <input type="email" id="email" value={formData.email} onChange={handleChange} placeholder="Email" className="form-control"></input>
+                        <input type="password" id="password" value={formData.password} onChange={handleChange} placeholder="Contraseña" className="form-control mt-2"></input>
                         <button type="submit" className="btn w-100 mt-3 text-white"
                         style={{"backgroundColor":"black"}}>Continuar</button>
                     </form>
