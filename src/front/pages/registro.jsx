@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import {Link} from 'react-router-dom';
 
 const Registro = () => {
 	const [username, setUsername] = useState('');
@@ -103,7 +103,7 @@ const Registro = () => {
 					</div>
 
 					<div className="text-center small text-muted">
-						¿Ya tienes una cuenta? <a href="/login" className="fw-bold">Inicia sesión aquí</a>
+						¿Ya tienes una cuenta? <Link to="/" className="fw-bold">Inicia sesión aquí</Link>
 					</div>
 				</form>
 			</div>
