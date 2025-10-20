@@ -8,6 +8,7 @@ import {
 
 import Registro from "./pages/registro.jsx";
 import Signin from "./pages/signin";
+import RegistroCreado from "./pages/registrocreado.jsx";
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -15,6 +16,8 @@ export const router = createBrowserRouter(
       <>
         <Route path="/" element={<Signin />} errorElement={<h1>Not found!</h1>} />
         <Route path="/registro" element={<Registro />} />
+        <Route path="/registro-creado" element={<RegistroCreado />} />
+
       </>
     )
 );
