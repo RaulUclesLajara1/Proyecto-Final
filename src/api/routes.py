@@ -2,7 +2,6 @@ from flask import Blueprint, request, jsonify
 from flask_cors import CORS
 from api.models import db, Persona, Ahorro, Emisiones 
 from flask_bcrypt import Bcrypt
-
 api = Blueprint('api', __name__)
 CORS(api)
 
@@ -73,3 +72,20 @@ def borrar_cuenta():
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": f"Error al borrar usuario: {str(e)}"}), 500
+    
+@api.route('/login', methods=['POST'])
+def login():
+    from app import bcrypt
+    from flask_jwt_extended import create_access_token
+    data = request.get_json()
+    username = data.get("username")
+    password_try = data.get("password")
+    user = Persona.query.get(username)
+    if not user:
+        return jsonify({"error":"usuario no encontrado"}), 404
+    if not bcrypt.check_password_hash(user.password, password_try):
+        return jsonify({"error":"contraseña incorrecta"}), 400
+    
+    token = create_access_token(identity=username)
+    return jsonify({"user":username, "token":token}), 200
+
