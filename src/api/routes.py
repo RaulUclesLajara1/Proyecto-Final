@@ -2,6 +2,8 @@ from flask import Blueprint, request, jsonify
 from flask_cors import CORS
 from api.models import db, Persona, Ahorro, Emisiones 
 from flask_bcrypt import Bcrypt
+from flask_jwt_extended import jwt_required, get_jwt_identity
+
 api = Blueprint('api', __name__)
 CORS(api)
 
@@ -88,4 +90,47 @@ def login():
     
     token = create_access_token(identity=username)
     return jsonify({"user":username, "token":token}), 200
+
+@api.route('/emisiones', methods=["POST"])
+@jwt_required()
+def anyadir_emisiones():
+    from flask_jwt_extended import get_jwt_identity
+    username = get_jwt_identity()
+    data = request.get_json()
+    fecha = data.get("fecha")
+    litros_combustible = data.get("litros_combustible")
+    kwh_consumidos = data.get("kwh_consumidos")
+    tipo_vehiculo = data.get("tipo_vehiculo")
+    energia_renovable = data.get("energia_renovable")
+    tipo_calefaccion = data.get("tipo_calefaccion")
+
+    emisiones = Emisiones(
+        username_persona=username,
+        litros_combustible=litros_combustible,
+        kwh_consumidos=kwh_consumidos,
+        tipo_vehiculo=tipo_vehiculo,
+        energia_renovable=energia_renovable,
+        tipo_calefaccion=tipo_calefaccion,
+        fecha=fecha
+    )
+    try:
+        db.session.add(emisiones)
+        db.session.commit()
+
+        return jsonify({
+            "message": "Emisión añadida correctamente",
+            "emision": emisiones.serialize()
+        }), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": f"Error al anyadir emisiones: {str(e)}"}), 500
+
+
+@api.route('/reset_db', methods=["DELETE"])
+def reset_db():
+    db.session.query(Emisiones).delete()
+    db.session.query(Persona).delete()
+    db.session.commit()
+    return jsonify({"msg": "Datos borrados correctamente"}), 200
+
 
