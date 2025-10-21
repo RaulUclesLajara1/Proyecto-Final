@@ -1,22 +1,75 @@
-"""
-This module takes care of starting the API Server, Loading the DB and Adding the endpoints
-"""
-from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User
-from api.utils import generate_sitemap, APIException
+from flask import Blueprint, request, jsonify
 from flask_cors import CORS
+from api.models import db, Persona, Ahorro, Emisiones 
+from flask_bcrypt import Bcrypt
 
 api = Blueprint('api', __name__)
-
-# Allow CORS requests to this API
 CORS(api)
 
 
-@api.route('/hello', methods=['POST', 'GET'])
-def handle_hello():
+@api.route('/')
+def menu():
+    return jsonify({"message": "Bienvenido al API"})
 
-    response_body = {
-        "message": "Hello! I'm a message that came from the backend, check the network tab on the google inspector and you will see the GET request"
-    }
+@api.route('/signup', methods=['POST'])
+def signup():
+    from app import bcrypt 
+    
+    data = request.get_json()
+    username = data.get("username")
+    email = data.get("email")
+    password = data.get("password")
 
-    return jsonify(response_body), 200
+    # Verificar si el usuario ya existe
+    existing_user = Persona.query.get(username)
+    if existing_user:
+        return jsonify({"error": "El nombre de usuario ya está en uso"}), 400
+
+    # Encriptar contraseña
+    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    # Crear nuevo usuario
+    usuario = Persona(username=username, email=email, password=hashed_password)
+
+    try:
+        db.session.add(usuario)
+        db.session.commit()
+        return jsonify({
+            "message": "Usuario registrado exitosamente",
+            "user": {
+                "username": username,
+                "email": email
+            }
+        }), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": f"Error al registrar usuario: {str(e)}"}), 500
+    
+
+@api.route('/borrar_cuenta', methods=['DELETE'])
+def borrar_cuenta():
+    from app import bcrypt  # Importar bcrypt desde app
+    
+    data = request.get_json()
+    username = data.get("username")
+    password = data.get("password")
+
+    user = Persona.query.get(username)
+
+    if not user:
+        return jsonify({"error": "No existe el nombre de usuario"}), 404
+
+    # Verificar contraseña con bcrypt
+    if not bcrypt.check_password_hash(user.password, password):
+        return jsonify({"error": "Contraseña incorrecta"}), 401
+
+    try:
+        db.session.delete(user)
+        db.session.commit()
+        return jsonify({
+            "message": "Usuario eliminado correctamente",
+            "user": username
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": f"Error al borrar usuario: {str(e)}"}), 500
