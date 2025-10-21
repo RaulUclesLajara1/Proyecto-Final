@@ -7,7 +7,7 @@ from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
-
+from flask_jwt_extended import JWTManager
 # Importar modelos y rutas
 from api.models import db
 from api.routes import api
@@ -18,13 +18,13 @@ static_file_dir = os.path.join(os.path.dirname(
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
-
+app.config["JWT_SECRET_KEY"] = "Charmander"
 # Inicializar CORS para toda la app
 CORS(app)
 
 # Inicializar Bcrypt
 bcrypt = Bcrypt(app)
-
+jwt = JWTManager(app)
 # Database configuration
 db_url = os.getenv("DATABASE_URL")
 if db_url is not None:
