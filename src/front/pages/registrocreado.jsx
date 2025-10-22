@@ -38,7 +38,7 @@ const RegistroCreado = () => {
           }
 
           .texto-verde {
-            color: #2e7d32;
+            color: #0bc814ff;
           }
 
           .registro-boton {
