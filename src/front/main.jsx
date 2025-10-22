@@ -4,7 +4,7 @@ import './index.css'  // Global styles for your application
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Signin from './pages/signin'
 import Registro from './pages/registro'
-import registrocreado from './pages/registrocreado';
+import Registrocreado from './pages/registrocreado';
 
 import { StoreProvider } from './hooks/useGlobalReducer'
 
@@ -22,7 +22,7 @@ const Main = () => {
                     <Routes>
                         <Route path="/" element={<Signin/>} />
                         <Route path="/registro" element={<Registro/>} />
-                        <Route path="/registro-creado" element={<registrocreado />} />
+                        <Route path="/registrocreado" element={<Registrocreado />} />
 
                     </Routes>
                 </BrowserRouter>
