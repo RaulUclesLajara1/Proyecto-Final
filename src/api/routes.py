@@ -91,9 +91,14 @@ def login():
     token = create_access_token(identity=username)
     return jsonify({"user":username, "token":token}), 200
 
-@api.route('/emisiones', methods=["POST"])
+@api.route('/emisiones', methods=["POST","PUT","GET"])
 @jwt_required()
 def anyadir_emisiones():
+    if request.method=="GET":
+        emisiones = Emisiones.query.all()
+        lista = [emision.serialize() for emision in emisiones]
+        return jsonify(lista), 200
+    
     from flask_jwt_extended import get_jwt_identity
     username = get_jwt_identity()
     data = request.get_json()
@@ -104,26 +109,101 @@ def anyadir_emisiones():
     energia_renovable = data.get("energia_renovable")
     tipo_calefaccion = data.get("tipo_calefaccion")
 
-    emisiones = Emisiones(
+    
+
+    if request.method == "POST":
+        emisiones = Emisiones(
         username_persona=username,
         litros_combustible=litros_combustible,
         kwh_consumidos=kwh_consumidos,
         tipo_vehiculo=tipo_vehiculo,
         energia_renovable=energia_renovable,
         tipo_calefaccion=tipo_calefaccion,
-        fecha=fecha
-    )
-    try:
-        db.session.add(emisiones)
-        db.session.commit()
+        fecha=fecha)
+        try:
+            db.session.add(emisiones)
+            db.session.commit()
 
-        return jsonify({
-            "message": "Emisión añadida correctamente",
-            "emision": emisiones.serialize()
-        }), 201
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": f"Error al anyadir emisiones: {str(e)}"}), 500
+            return jsonify({
+                "message": "Emisión añadida correctamente",
+                "emision": emisiones.serialize()
+            }), 201
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"error": f"Error al anyadir emisiones: {str(e)}"}), 500
+    elif request.method == "PUT":
+        try:
+            existing_ahorro = Emisiones.query.filter_by(username_persona=username, fecha=fecha).first()
+            if not existing_ahorro:
+                return jsonify({"error": "No se encontró la emisión para actualizar"}), 404
+
+            existing_ahorro.litros_combustible = litros_combustible
+            existing_ahorro.kwh_consumidos = kwh_consumidos
+            existing_ahorro.tipo_vehiculo = tipo_vehiculo
+            existing_ahorro.energia_renovable = energia_renovable
+            existing_ahorro.tipo_calefaccion = tipo_calefaccion
+
+            db.session.commit()
+
+            return jsonify({
+                "message": "Emisión actualizada correctamente",
+                "emision": existing_ahorro.serialize()
+            }), 200
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"error": f"Error al actualizar emisiones: {str(e)}"}), 500
+
+@api.route('/ahorros', methods=["POST", "PUT", "GET"])
+@jwt_required()
+def ahorros():
+    if request.method == "GET":
+        ahorros = Ahorro.query.all()
+        lista = [ahorro.serialize() for ahorro in ahorros]
+        return jsonify(lista), 200
+        
+    from flask_jwt_extended import get_jwt_identity
+    user = get_jwt_identity()
+    data = request.get_json()
+    ingresos = float(data.get("ingresos"))
+    gastos = float(data.get("gastos"))
+    fecha = data.get("fecha")
+    if request.method == "POST":
+        ahorro = Ahorro(
+            username_persona = user,
+            ingresos = ingresos,
+            gastos = gastos,
+            fecha = fecha
+        )
+        try:
+            db.session.add(ahorro)
+            db.session.commit()
+            return jsonify({"message":"Ahorro añadido correctamente"}), 200
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"error": f"Error al añadir ahorro: {str(e)}"}), 500
+    elif request.method == "PUT":
+        try:
+            existing_ahorro = Ahorro.query.filter_by(username_persona=user, fecha=fecha).first()
+            if not existing_ahorro:
+                return jsonify({"error": "No se encontró el ahorro para actualizar"}), 404
+
+
+            #En caso de querer actualizar se pasaría por parametro la cantidad a sumar o restar (valores positivos o negativos)
+            # ingresos = 0 o gastos = 0 en caso de que no se desee actualizar una de estas columnas
+            existing_ahorro.ingresos += ingresos
+            existing_ahorro.gastos += gastos
+
+            db.session.commit()
+
+            return jsonify({
+                "message": "Ahorro actualizado correctamente",
+                "ahorro": existing_ahorro.serialize()
+            }), 200
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"error": f"Error al actualizar ahorros: {str(e)}"}), 500
+
+
 
 
 @api.route('/reset_db', methods=["DELETE"])
@@ -132,5 +212,4 @@ def reset_db():
     db.session.query(Persona).delete()
     db.session.commit()
     return jsonify({"msg": "Datos borrados correctamente"}), 200
-
 
