@@ -22,7 +22,7 @@ const Main = () => {
                     <Routes>
                         <Route path="/" element={<Signin/>} />
                         <Route path="/registro" element={<Registro/>} />
-                        <Route path="/registrocreado" element={<Registrocreado />} />
+                        <Route path="/registro-creado" element={<Registrocreado />} />
 
                     </Routes>
                 </BrowserRouter>
