@@ -133,21 +133,21 @@ def anyadir_emisiones():
             return jsonify({"error": f"Error al anyadir emisiones: {str(e)}"}), 500
     elif request.method == "PUT":
         try:
-            existing_ahorro = Emisiones.query.filter_by(username_persona=username, fecha=fecha).first()
-            if not existing_ahorro:
+            existing_emision = Emisiones.query.filter_by(username_persona=username, fecha=fecha).first()
+            if not existing_emision:
                 return jsonify({"error": "No se encontró la emisión para actualizar"}), 404
 
-            existing_ahorro.litros_combustible = litros_combustible
-            existing_ahorro.kwh_consumidos = kwh_consumidos
-            existing_ahorro.tipo_vehiculo = tipo_vehiculo
-            existing_ahorro.energia_renovable = energia_renovable
-            existing_ahorro.tipo_calefaccion = tipo_calefaccion
+            existing_emision.litros_combustible = litros_combustible
+            existing_emision.kwh_consumidos = kwh_consumidos
+            existing_emision.tipo_vehiculo = tipo_vehiculo
+            existing_emision.energia_renovable = energia_renovable
+            existing_emision.tipo_calefaccion = tipo_calefaccion
 
             db.session.commit()
 
             return jsonify({
                 "message": "Emisión actualizada correctamente",
-                "emision": existing_ahorro.serialize()
+                "emision": existing_emision.serialize()
             }), 200
         except Exception as e:
             db.session.rollback()
@@ -210,6 +210,7 @@ def ahorros():
 def reset_db():
     db.session.query(Emisiones).delete()
     db.session.query(Persona).delete()
+    db.session.query(Ahorro).delete()
     db.session.commit()
     return jsonify({"msg": "Datos borrados correctamente"}), 200
 
