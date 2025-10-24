@@ -17,7 +17,6 @@ export const router = createBrowserRouter(
         <Route path="/" element={<Signin />} errorElement={<h1>Not found!</h1>} />
         <Route path="/registro" element={<Registro />} />
         <Route path="/registro-creado" element={<RegistroCreado />} />
-
       </>
     )
 );
