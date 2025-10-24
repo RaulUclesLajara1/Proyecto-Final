@@ -12,8 +12,9 @@ class Persona(db.Model):
     email : Mapped[str] = mapped_column(nullable=False)
     password : Mapped[str] = mapped_column(nullable=False)
 
-    ahorros : Mapped[List["Ahorro"]] = relationship(back_populates="persona") 
-    emisiones : Mapped[List["Emisiones"]] = relationship(back_populates="persona")
+  
+    ahorros : Mapped[List["Ahorro"]] = relationship(back_populates="persona", cascade="all, delete-orphan") 
+    emisiones : Mapped[List["Emisiones"]] = relationship(back_populates="persona", cascade="all, delete-orphan")
 
     def serialize(self):
         return {
@@ -29,7 +30,9 @@ class Ahorro(db.Model):
     __tablename__="ahorro"
     
     id : Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    username_persona: Mapped[str] = mapped_column(ForeignKey("persona.username"), nullable=False)
+    
+    username_persona: Mapped[str] = mapped_column(ForeignKey("persona.username", ondelete="CASCADE"), nullable=False)
+    
     persona: Mapped["Persona"] = relationship(back_populates="ahorros") 
     ingresos : Mapped[float] = mapped_column(nullable=False)
     gastos : Mapped[float] = mapped_column(nullable=False)
@@ -48,7 +51,9 @@ class Emisiones(db.Model):
     __tablename__="emisiones"
     
     id : Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    username_persona: Mapped[str] = mapped_column(ForeignKey("persona.username"), nullable=False)
+    
+    username_persona: Mapped[str] = mapped_column(ForeignKey("persona.username", ondelete="CASCADE"), nullable=False)
+    
     persona: Mapped["Persona"] = relationship(back_populates="emisiones") 
     litros_combustible : Mapped[float] = mapped_column(nullable=False)
     kwh_consumidos : Mapped[float] = mapped_column(nullable=False)
