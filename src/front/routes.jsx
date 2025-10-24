@@ -9,6 +9,7 @@ import {
 import Registro from "./pages/registro.jsx"
 import Signin from "./pages/signin";
 import RegistroCreado from "./pages/registrocreado.jsx";
+import Formulario from "./pages/formulario.jsx";
 import RutaProtegida from "./hooks/RutaProtegida.jsx";
 
 export const router = createBrowserRouter(
