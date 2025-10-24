@@ -17,12 +17,12 @@ const Registro = () => {
 
         try {
             const url = import.meta.env.VITE_BACKEND_URL;
-            const response = await fetch(`${url}/api/signup`, {
+            const response = await fetch(`${url}api/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, email, password }),
+                body: JSON.stringify({'username':username, 'email':email, 'password':password}),
             });
 
             if (response.ok) {
