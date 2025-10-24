@@ -12,8 +12,7 @@ const Registro = () => {
 		e.preventDefault();
 		if (!terms) return;
 		console.log({ username, email, password });
-	};
-
+	}; 
 	return (
 		<div className="d-flex justify-content-center align-items-start p-2">
 			<div className="container">
