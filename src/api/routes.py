@@ -12,39 +12,44 @@ CORS(api)
 def menu():
     return jsonify({"message": "Bienvenido al API"})
 
-@api.route('/signup', methods=['POST'])
+@api.route('/signup', methods=['POST',"GET"])
 def signup():
-    from app import bcrypt 
-    
-    data = request.get_json()
-    username = data.get("username")
-    email = data.get("email")
-    password = data.get("password")
+    if request.method == "POST":
+        from app import bcrypt 
+        
+        data = request.get_json()
+        username = data.get("username")
+        email = data.get("email")
+        password = data.get("password")
 
-    # Verificar si el usuario ya existe
-    existing_user = Persona.query.get(username)
-    if existing_user:
-        return jsonify({"error": "El nombre de usuario ya está en uso"}), 400
+        # Verificar si el usuario ya existe
+        existing_user = Persona.query.get(username)
+        if existing_user:
+            return jsonify({"error": "El nombre de usuario ya está en uso"}), 400
 
-    # Encriptar contraseña
-    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        # Encriptar contraseña
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
-    # Crear nuevo usuario
-    usuario = Persona(username=username, email=email, password=hashed_password)
+        # Crear nuevo usuario
+        usuario = Persona(username=username, email=email, password=hashed_password)
 
-    try:
-        db.session.add(usuario)
-        db.session.commit()
-        return jsonify({
-            "message": "Usuario registrado exitosamente",
-            "user": {
-                "username": username,
-                "email": email
-            }
-        }), 201
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": f"Error al registrar usuario: {str(e)}"}), 500
+        try:
+            db.session.add(usuario)
+            db.session.commit()
+            return jsonify({
+                "message": "Usuario registrado exitosamente",
+                "user": {
+                    "username": username,
+                    "email": email
+                }
+            }), 201
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"error": f"Error al registrar usuario: {str(e)}"}), 500
+    elif request.method == "GET":
+        personas = Persona.query.all()
+        lista = [persona.serialize() for persona in personas]
+        return jsonify(lista), 200
     
 
 @api.route('/borrar_cuenta', methods=['DELETE'])
