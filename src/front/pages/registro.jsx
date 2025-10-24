@@ -27,7 +27,6 @@ const Registro = () => {
 
             if (response.ok) {
                 setMensaje('✅ Registro creado exitosamente');
-                setTimeout(() => navigate('/registro-creado'), 1500);
             } else {
                 const error = await response.json();
                 if (error.error?.includes('ya está en uso')) {
