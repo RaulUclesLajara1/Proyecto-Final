@@ -7,6 +7,7 @@ import Registro from './pages/registro'
 import Registrocreado from './pages/registrocreado';
 
 import { StoreProvider } from './hooks/useGlobalReducer'
+import RutaProtegida from './hooks/RutaProtegida'
 
 const Main = () => {
     // Do not block rendering when VITE_BACKEND_URL is missing in development.
@@ -22,8 +23,9 @@ const Main = () => {
                     <Routes>
                         <Route path="/" element={<Signin/>} />
                         <Route path="/registro" element={<Registro/>} />
-                        <Route path="/registro-creado" element={<Registrocreado />} />
-
+                        <Route element={<RutaProtegida/>}>
+                            <Route path="/registro-creado" element={<Registrocreado />} />
+                        </Route>
                     </Routes>
                 </BrowserRouter>
             </StoreProvider>

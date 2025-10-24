@@ -8,6 +8,21 @@ api = Blueprint('api', __name__)
 CORS(api)
 
 
+@api.route('/verificar_jwt',methods=["GET"])
+@jwt_required()
+def verificar_jwt():
+    try:
+        username = get_jwt_identity()
+        usuario = Persona.query.get(username)
+        if not usuario:
+            return jsonify({"error": "El token no es valido"}), 404
+        else:
+            return jsonify({"exito":"el token es válido", "username" : username}), 200
+    except Exception as e:
+        return jsonify({"error": f"Error al verificar token: {str(e)}"}), 500
+
+
+
 @api.route('/')
 def menu():
     return jsonify({"message": "Bienvenido al API"})
