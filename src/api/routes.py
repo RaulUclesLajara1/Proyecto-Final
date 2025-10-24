@@ -14,7 +14,7 @@ def menu():
 
 @api.route('/signup', methods=['POST',"GET"])
 def signup():
-    if request.method == "GET":
+    if request.method == "POST":
         from app import bcrypt 
         
         data = request.get_json()
