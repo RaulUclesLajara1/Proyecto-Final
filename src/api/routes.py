@@ -130,6 +130,7 @@ def anyadir_emisiones():
 def reset_db():
     db.session.query(Emisiones).delete()
     db.session.query(Persona).delete()
+    db.session.query(Ahorro).delete()
     db.session.commit()
     return jsonify({"msg": "Datos borrados correctamente"}), 200
 
