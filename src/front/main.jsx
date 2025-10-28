@@ -9,6 +9,7 @@ import Registrocreado from './pages/registrocreado';
 import { StoreProvider } from './hooks/useGlobalReducer'
 import RutaProtegida from './hooks/RutaProtegida'
 import Dashboard from './pages/dashboard'
+import Formulario from './pages/formulario'
 
 const Main = () => {
     // Do not block rendering when VITE_BACKEND_URL is missing in development.
@@ -24,8 +25,9 @@ const Main = () => {
                     <Routes>
                         <Route path="/" element={<Signin/>} />
                         <Route path="/registro" element={<Registro/>} />
-                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/formulario" element={<Formulario/>}/>
                         <Route element={<RutaProtegida/>}>
+                            <Route path="/dashboard" element={<Dashboard />} />
                             <Route path="/registro-creado" element={<Registrocreado />} />
                         </Route>
                     </Routes>
