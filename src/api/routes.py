@@ -68,21 +68,15 @@ def signup():
     
 
 @api.route('/borrar_cuenta', methods=['DELETE'])
+@jwt_required()
 def borrar_cuenta():
     from app import bcrypt  # Importar bcrypt desde app
+    from flask_jwt_extended import get_jwt_identity
     
-    data = request.get_json()
-    username = data.get("username")
-    password = data.get("password")
+    username = get_jwt_identity()
+   
 
     user = Persona.query.get(username)
-
-    if not user:
-        return jsonify({"error": "No existe el nombre de usuario"}), 404
-
-    # Verificar contraseña con bcrypt
-    if not bcrypt.check_password_hash(user.password, password):
-        return jsonify({"error": "Contraseña incorrecta"}), 401
 
     try:
         db.session.delete(user)
