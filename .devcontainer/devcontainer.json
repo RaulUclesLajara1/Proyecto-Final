@@ -1,10 +1,7 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/postgres
 {
 	"name": "Python 3 & PostgreSQL",
-	"dockerComposeFile": "docker-compose.yml",
-	"service": "app",
-	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+	"image": "mcr.microsoft.com/devcontainers/python:3.13",
+	
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {
 			"installDirectlyFromGitHubRelease": true,
@@ -13,19 +10,16 @@
 		"ghcr.io/devcontainers/features/node:1": {
 			"nodeGypDependencies": true,
 			"version": "lts"
+		},
+		"ghcr.io/devcontainers/features/postgres:1": {
+			"version": "latest"
 		}
 	},
 
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
-
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// This can be used to network with other containers or the host.
-	"forwardPorts": [3000, 3001],
-
-	"onCreateCommand": "(cp .env.example .env || echo \".env creation failed\"); (pipenv install || echo \"pipenv install failed\"); (bash database.sh || echo \"database.sh failed\");",
-	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "python docs/assets/greeting.py both > /workspaces/.codespaces/shared/first-run-notice.txt && npm install",
+	"forwardPorts": [3000, 3001, 5432],
+	
+	"postCreateCommand": "pip install pipenv && cp .env.example .env && pipenv install && npm install",
+	
 	"customizations": {
 		"vscode": {
 			"extensions": [
@@ -34,7 +28,8 @@
 			]
 		}
 	},
-
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
+	
+	"remoteEnv": {
+		"DATABASE_URL": "postgresql://postgres:postgres@localhost:5432/example"
+	}
 }
