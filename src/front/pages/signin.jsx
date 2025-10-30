@@ -1,11 +1,13 @@
-import { Link, useParams } from "react-router-dom"
+import { Link, useParams, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import imagen from "../assets/image.png"
 
 const Signin = () => {
+    const navigate = useNavigate(); // use navigate
+
     const [formData, setFormData] = useState({
         username: "",
-        password_try: "",
+        password: "",
     });
     
     const handleChange = (e) => {
@@ -15,6 +17,33 @@ const Signin = () => {
             [id]: value 
         }))
     };
+    
+    const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const url = import.meta.env.VITE_BACKEND_URL;
+      const response = await fetch(`${url}api/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      console.log (response)
+
+      const data = await response.json();
+      console.log("Respuesta del backend:", data);
+
+      if (response.ok) {
+        localStorage.setItem("jwt-token",data.token)
+      navigate("/registro-creado");
+      } else {
+      alert(data.error || "Credenciales incorrectas");
+      }
+    } catch (error) {
+      console.error("Error al conectar con el backend:", error);
+      alert("Hubo un problema al iniciar sesión");
+    }
+  };
     
     return (
         <>
@@ -28,7 +57,7 @@ const Signin = () => {
             <div className="row mt-5">
                 <div className="col">
                     <h5 className="inter-texto text-start ms-2">Iniciar sesión</h5>
-                    <form className="p-2">
+                    <form className="p-2" onSubmit={handleSubmit}>
                         <input type="text" id="username" value={formData.username} onChange={handleChange} placeholder="Usuario" className="form-control"></input>
                         <input type="password" id="password" value={formData.password} onChange={handleChange} placeholder="Contraseña" className="form-control mt-2"></input>
                         <button type="submit" className="btn w-100 mt-3 text-white"
