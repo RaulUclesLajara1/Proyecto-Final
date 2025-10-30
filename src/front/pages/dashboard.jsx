@@ -19,6 +19,7 @@ const Dashboard = () => {
     const [fechas, setFechas] = useState([]);
     const borrarCuenta = async () => {
         setErrorMsg("");
+        const jwtToken = localStorage.getItem("jwt-token");
         try {
             const response = await fetch(
                 `${import.meta.env.VITE_BACKEND_URL}api/borrar_cuenta`,
@@ -39,7 +40,7 @@ const Dashboard = () => {
             }
 
             localStorage.removeItem("jwt-token");
-            navigate("/login");
+            navigate("/");
         } catch (error) {
             console.error("Error al borrar cuenta:", error);
             setErrorMsg("Error al conectar con el servidor.");

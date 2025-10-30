@@ -22,11 +22,12 @@ const Registro = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({'username':username, 'email':email, 'password':password}),
+                body: JSON.stringify({ 'username': username, 'email': email, 'password': password }),
             });
 
             if (response.ok) {
                 setMensaje('✅ Registro creado exitosamente');
+                navigate("/")
             } else {
                 const error = await response.json();
                 if (error.error?.includes('ya está en uso')) {

@@ -9,7 +9,7 @@ const Formulario = () => {
         tipovehiculo: "",
         consumovehiculo: "",
         kmsemana: "",
-        energiasrenovables: "",
+        energiasrenovables: false,
         consumoelectrico: "",
         tipocalefaccion: "",
         transportepublico: "",
@@ -19,12 +19,16 @@ const Formulario = () => {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
     const navigate = useNavigate();
+    const fecha = new Date();
+    const año = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const formato = `${año}/${mes}`;
 
     // Maneja cambios en los campos del formulario
     const handleChange = (e) => {
         const { id, name, type, value, checked, files } = e.target;
         const key = id || name;
-        if (!key) return; 
+        if (!key) return;
 
         let newValue;
         if (type === 'checkbox') {
@@ -49,10 +53,10 @@ const Formulario = () => {
         // Envía los datos del formulario al backend
         try {
             const base = import.meta.env.VITE_BACKEND_URL || '';
-            const res = await fetch(`${base}/api/ahorros`, {
+            const res = await fetch(`${base}api/ahorros`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' , 'Authorization' : 'Bearer' + token },
-                body: JSON.stringify({'ingresos': formData.ingresos, 'gastos': formData.gastos})
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                body: JSON.stringify({ 'fecha': formato, 'ingresos': formData.ingresos, 'gastos': formData.gastos })
             });
 
             if (!res.ok) {
@@ -61,28 +65,28 @@ const Formulario = () => {
             }
 
             setSuccess(true);
-        
+
         } catch (err) {
             setError(err.message || 'Error desconocido');
         } finally {
             setSubmitting(false);
         }
-        
+
         try {
             const base = import.meta.env.VITE_BACKEND_URL || '';
-            const res = await fetch(`${base}/api/emisiones`, {
+            const res = await fetch(`${base}api/emisiones`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' , 'Authorization' : 'Bearer' + token },
-                body: JSON.stringify({'litros_combustible': formData.kmsemana * formData.consumovehiculo / 100, 'kwh_consumidos': formData.consumoelectrico, 'tipo_vehiculo' : formData.tipovehiculo, 'tipo_calefaccion': formData.tipocalefaccion, 'energia_renovable': formData.energiasrenovables})
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                body: JSON.stringify({ 'fecha': formato, 'litros_combustible': formData.kmsemana * formData.consumovehiculo / 100, 'kwh_consumidos': formData.consumoelectrico, 'tipo_vehiculo': formData.tipovehiculo, 'tipo_calefaccion': formData.tipocalefaccion, 'energia_renovable': formData.energiasrenovables })
             });
-    
+
             if (!res.ok) {
                 const data = await res.json().catch(() => ({}));
                 throw new Error(data.message || data.detail || 'Error al enviar formulario');
             }
-    
+
             setSuccess(true);
-        
+
         } catch (err) {
             setError(err.message || 'Error desconocido');
         } finally {
@@ -187,9 +191,9 @@ const Formulario = () => {
                                 id="energiasrenovables-si"
                                 name="energiasrenovables"
                                 type="radio"
-                                value="si"
-                                checked={formData.energiasrenovables === 'si'}
-                                onChange={(e) => setFormData({ ...formData, energiasrenovables: e.target.value })}
+                                value="true"
+                                checked={formData.energiasrenovables === true}
+                                onChange={() => setFormData({ ...formData, energiasrenovables: true })}
                                 className="form-check-input" />
                         </div>
 
@@ -199,9 +203,9 @@ const Formulario = () => {
                                 id="energiasrenovables-no"
                                 name="energiasrenovables"
                                 type="radio"
-                                value="no"
-                                checked={formData.energiasrenovables === 'no'}
-                                onChange={(e) => setFormData({ ...formData, energiasrenovables: e.target.value })}
+                                value="false"
+                                checked={formData.energiasrenovables === false}
+                                onChange={(s) => setFormData({ ...formData, energiasrenovables: false })}
                                 className="form-check-input" />
                         </div>
                     </div>
@@ -306,7 +310,7 @@ const Formulario = () => {
                                 className="form-check-input" />
                         </div>
                     </div>
-                    {error && <div className="alert alert-danger" role="alert">{error}</div>} 
+                    {error && <div className="alert alert-danger" role="alert">{error}</div>}
                     {success && <div className="alert alert-success" role="alert">Formulario enviado correctamente.</div>}
                     <div className="d-grid mb-3">
                         <button type="submit" className="btn w-100 mt-3 text-white"
