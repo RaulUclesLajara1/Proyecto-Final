@@ -103,8 +103,8 @@ const Signin = () => {
                             <button
                                 type="button"
                                 onClick={handleGoogleSignIn}
-                                className="btn w-100 mt-2 text-white"
-                                style={{ "backgroundColor": "#df0000ff" }}
+                                className="btn w-100 mt-2 text-black"
+                                style={{ "backgroundColor": "#00df47ff" }}
                             >
                                 <i className="fab fa-google me-2"></i> Iniciar sesión con Google
                             </button>
