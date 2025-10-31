@@ -5,6 +5,6 @@ set -o errexit
 npm install
 npm run build
 
-pipenv install
+flask db install
 
-pipenv run upgrade
+flask db upgrade
