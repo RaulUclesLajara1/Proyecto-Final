@@ -168,6 +168,22 @@ def emisiones():
             return jsonify({"error": f"Error al actualizar emisiones: {str(e)}"}), 500
 
 
+@api.route('/verificar_fecha',methods=["GET"])
+@jwt_required()
+def verficar_fecha():
+    from datetime import datetime
+    from flask_jwt_extended import get_jwt_identity
+    try:
+        username = get_jwt_identity()
+        fecha_actual = datetime.now().strftime("%Y/%m")
+        emisiones = Emisiones.query.filter_by(username_persona=username,fecha=fecha_actual).first()
+        if emisiones:
+            return jsonify({"message":"Dashboard"}),200
+        else:
+            return jsonify({"message":"Formulario"}),200
+    except Exception as e:
+        return jsonify({"error":f"Error al verificar la fecha: {str(e)}"}), 500
+    
 
 
 

@@ -1,9 +1,33 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const RegistroCreado = () => {
   const navigate = useNavigate();
+  const jwtToken = localStorage.getItem("jwt-token")
+  const [mensaje, setMensaje] = useState("")
+  const verficarfecha = async () => {
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}api/verificar_fecha`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + jwtToken,
+        },
+      }
+    );
+    const data = await response.json()
+    if (!response.ok) {
+      setMensaje(response.error)
+    }
+    if (data.message == "Dashboard") {
+      navigate('/dashboard');
 
+    }
+    else if (data.message == "Formulario") {
+      navigate('/formulario');
+    }
+  }
   return (
     <>
       <style>
@@ -63,7 +87,10 @@ const RegistroCreado = () => {
         <p className="registro-submensaje">
           Elegir con conciencia nos conecta con algo más grande: <b className="texto-verde">proteger lo que nos rodea.</b>
         </p>
-        <div className="registro-boton" onClick={() => navigate('/formulario')}>
+        <p>
+          {mensaje}
+        </p>
+        <div className="registro-boton" onClick={verficarfecha}>
           ¿Empezamos?
         </div>
       </div>
