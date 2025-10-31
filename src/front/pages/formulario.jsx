@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import imagen from "../assets/image3.png";
 
@@ -9,7 +9,7 @@ const Formulario = () => {
         tipovehiculo: "",
         consumovehiculo: "",
         kmsemana: "",
-        energiasrenovables: "",
+        energiasrenovables: false,
         consumoelectrico: "",
         tipocalefaccion: "",
         transportepublico: "",
@@ -18,11 +18,17 @@ const Formulario = () => {
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
+    const navigate = useNavigate();
+    const fecha = new Date();
+    const año = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const formato = `${año}/${mes}`;
 
+    // Maneja cambios en los campos del formulario
     const handleChange = (e) => {
         const { id, name, type, value, checked, files } = e.target;
-        const key = id || name; // usa id si existe, si no usa name
-        if (!key) return; // nada que actualizar sin id/name
+        const key = id || name;
+        if (!key) return;
 
         let newValue;
         if (type === 'checkbox') {
@@ -36,19 +42,21 @@ const Formulario = () => {
         setFormData(prev => ({ ...prev, [key]: newValue }));
     };
 
+    // Maneja el envío del formulario
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmitting(true);
         setError(null);
         setSuccess(false);
+        const token = localStorage.getItem('jwt-token');
 
+        // Envía los datos del formulario al backend
         try {
             const base = import.meta.env.VITE_BACKEND_URL || '';
-            // endpoint: /api/formulario (ajusta si tu backend usa otra ruta)
-            const res = await fetch(`${base}/api/formulario`, {
+            const res = await fetch(`${base}api/ahorros`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                body: JSON.stringify({ 'fecha': formato, 'ingresos': formData.ingresos, 'gastos': formData.gastos })
             });
 
             if (!res.ok) {
@@ -57,14 +65,38 @@ const Formulario = () => {
             }
 
             setSuccess(true);
-            // opcional: limpiar el form
-            // setFormData({ ingresos: '', gastos: '', tipovehiculo: '', consumovehiculo: '', kmsemana: '', energiasrenovables: '', consumoelectrico: '', tipocalefaccion: '', transportepublico: '', reciclas: '' });
+
         } catch (err) {
             setError(err.message || 'Error desconocido');
         } finally {
             setSubmitting(false);
         }
+
+        try {
+            const base = import.meta.env.VITE_BACKEND_URL || '';
+            const res = await fetch(`${base}api/emisiones`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                body: JSON.stringify({ 'fecha': formato, 'litros_combustible': formData.kmsemana * formData.consumovehiculo / 100, 'kwh_consumidos': formData.consumoelectrico, 'tipo_vehiculo': formData.tipovehiculo, 'tipo_calefaccion': formData.tipocalefaccion, 'energia_renovable': formData.energiasrenovables })
+            });
+
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.message || data.detail || 'Error al enviar formulario');
+            }
+
+            setSuccess(true);
+
+        } catch (err) {
+            setError(err.message || 'Error desconocido');
+        } finally {
+            setSubmitting(false);
+        }
+
+        navigate('/dashboard')
+
     };
+
 
     return (
         <div className="d-flex justify-content-center align-items-start p-2">
@@ -121,8 +153,8 @@ const Formulario = () => {
                             required
                         >
                             <option value="">Selecciona una opción</option>
-                            <option value="Híbrido">Híbrido</option>
-                            <option value="Eléctrico">Eléctrico</option>
+                            <option value="Hibrido">Híbrido</option>
+                            <option value="Electrico">Eléctrico</option>
                             <option value="Gasolina">Gasolina</option>
                             <option value="Diesel">Diesel</option>
                         </select>
@@ -159,9 +191,9 @@ const Formulario = () => {
                                 id="energiasrenovables-si"
                                 name="energiasrenovables"
                                 type="radio"
-                                value="si"
-                                checked={formData.energiasrenovables === 'si'}
-                                onChange={(e) => setFormData({ ...formData, energiasrenovables: e.target.value })}
+                                value="true"
+                                checked={formData.energiasrenovables === true}
+                                onChange={() => setFormData({ ...formData, energiasrenovables: true })}
                                 className="form-check-input" />
                         </div>
 
@@ -171,9 +203,9 @@ const Formulario = () => {
                                 id="energiasrenovables-no"
                                 name="energiasrenovables"
                                 type="radio"
-                                value="no"
-                                checked={formData.energiasrenovables === 'no'}
-                                onChange={(e) => setFormData({ ...formData, energiasrenovables: e.target.value })}
+                                value="false"
+                                checked={formData.energiasrenovables === false}
+                                onChange={(s) => setFormData({ ...formData, energiasrenovables: false })}
                                 className="form-check-input" />
                         </div>
                     </div>
@@ -199,7 +231,7 @@ const Formulario = () => {
                             required
                         >
                             <option value="">Selecciona una opción</option>
-                            <option value="Eléctrica">Eléctrica</option>
+                            <option value="Electrica">Eléctrica</option>
                             <option value="Gas-natural">Gas Natural</option>
                             <option value="Gas-propano">Gas Propano</option>
                             <option value="Gasoil">Gasoil</option>

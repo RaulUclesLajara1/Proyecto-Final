@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import String, Boolean, Table, Column, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 from typing import List
 
 db = SQLAlchemy()
@@ -61,7 +61,37 @@ class Emisiones(db.Model):
     energia_renovable : Mapped[bool] = mapped_column(nullable=False)
     tipo_calefaccion : Mapped[str] = mapped_column(nullable=False)
     fecha : Mapped[str] = mapped_column(nullable=False)
-
+    kg_co2 : Mapped[float] = mapped_column(nullable=True)
+    
+    @validates('litros_combustible', 'kwh_consumidos', 'tipo_vehiculo', 'tipo_calefaccion')
+    def calcularco2(self, key, value):
+        match self.tipo_vehiculo:
+            case 'Electrico':
+                co2_combustible = 0
+            case 'Hibrido':
+                co2_combustible = 1500
+            case 'Gasolina':
+                co2_combustible = 2310
+            case 'Diesel':
+                co2_combustible = 2680
+            case _:
+                co2_combustible = 2500
+        match self.tipo_calefaccion:
+            case 'Electrica':
+                co2_electricidad = 200
+            case 'Gas-Natural':
+                co2_electricidad = 202
+            case 'Gas-Propano':
+                co2_electricidad = 230
+            case 'Gasoil':
+                co2_electricidad = 265
+            case 'Biomasa':
+                co2_electricidad = 0
+            case _:
+                co2_electricidad = 220
+        if self.kwh_consumidos is not None and self.litros_combustible is not None:
+            self.kg_co2 = round((self.kwh_consumidos*co2_electricidad*4 + self.litros_combustible * co2_combustible)/1000,2)
+        return value
     def serialize(self):
         return {
             "id" : self.id,
@@ -71,5 +101,6 @@ class Emisiones(db.Model):
             "tipo_vehiculo" : self.tipo_vehiculo,
             "energia_renovable" : self.energia_renovable,
             "tipo_calefaccion" : self.tipo_calefaccion,
-            "fecha" : self.fecha
+            "fecha" : self.fecha,
+            "kg_co2" : self.kg_co2 
         }

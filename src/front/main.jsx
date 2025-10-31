@@ -8,6 +8,8 @@ import Registrocreado from './pages/registrocreado';
 
 import { StoreProvider } from './hooks/useGlobalReducer'
 import RutaProtegida from './hooks/RutaProtegida'
+import Dashboard from './pages/dashboard'
+import Formulario from './pages/formulario'
 
 // --- INICIO DE LA CONFIGURACIÓN E INICIALIZACIÓN DE FIREBASE ---
 
@@ -47,7 +49,9 @@ const Main = () => {
                     <Routes>
                         <Route path="/" element={<Signin/>} />
                         <Route path="/registro" element={<Registro/>} />
+                        <Route path="/formulario" element={<Formulario/>}/>
                         <Route element={<RutaProtegida/>}>
+                            <Route path="/dashboard" element={<Dashboard />} />
                             <Route path="/registro-creado" element={<Registrocreado />} />
                         </Route>
                     </Routes>

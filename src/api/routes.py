@@ -68,21 +68,15 @@ def signup():
     
 
 @api.route('/borrar_cuenta', methods=['DELETE'])
+@jwt_required()
 def borrar_cuenta():
     from app import bcrypt  # Importar bcrypt desde app
+    from flask_jwt_extended import get_jwt_identity
     
-    data = request.get_json()
-    username = data.get("username")
-    password = data.get("password")
+    username = get_jwt_identity()
+   
 
     user = Persona.query.get(username)
-
-    if not user:
-        return jsonify({"error": "No existe el nombre de usuario"}), 404
-
-    # Verificar contraseña con bcrypt
-    if not bcrypt.check_password_hash(user.password, password):
-        return jsonify({"error": "Contraseña incorrecta"}), 401
 
     try:
         db.session.delete(user)
@@ -113,14 +107,14 @@ def login():
 
 @api.route('/emisiones', methods=["POST","PUT","GET"])
 @jwt_required()
-def anyadir_emisiones():
+def emisiones():
+    from flask_jwt_extended import get_jwt_identity
+    username = get_jwt_identity()
     if request.method=="GET":
-        emisiones = Emisiones.query.all()
+        emisiones = Emisiones.query.filter_by(username_persona=username).all()
         lista = [emision.serialize() for emision in emisiones]
         return jsonify(lista), 200
     
-    from flask_jwt_extended import get_jwt_identity
-    username = get_jwt_identity()
     data = request.get_json()
     fecha = data.get("fecha")
     litros_combustible = data.get("litros_combustible")
@@ -173,16 +167,39 @@ def anyadir_emisiones():
             db.session.rollback()
             return jsonify({"error": f"Error al actualizar emisiones: {str(e)}"}), 500
 
+
+@api.route('/verificar_fecha',methods=["GET"])
+@jwt_required()
+def verficar_fecha():
+    from datetime import datetime
+    from flask_jwt_extended import get_jwt_identity
+    try:
+        username = get_jwt_identity()
+        fecha_actual = datetime.now().strftime("%Y/%m")
+        emisiones = Emisiones.query.filter_by(username_persona=username,fecha=fecha_actual).first()
+        if emisiones:
+            return jsonify({"message":"Dashboard"}),200
+        else:
+            return jsonify({"message":"Formulario"}),200
+    except Exception as e:
+        return jsonify({"error":f"Error al verificar la fecha: {str(e)}"}), 500
+    
+
+
+
 @api.route('/ahorros', methods=["POST", "PUT", "GET"])
 @jwt_required()
 def ahorros():
-    if request.method == "GET":
-        ahorros = Ahorro.query.all()
-        lista = [ahorro.serialize() for ahorro in ahorros]
-        return jsonify(lista), 200
-        
     from flask_jwt_extended import get_jwt_identity
     user = get_jwt_identity()
+    if request.method == "GET":
+        try:
+            ahorros = Ahorro.query.filter_by(username_persona=user).all()
+            lista = [ahorro.serialize() for ahorro in ahorros]
+            return jsonify(lista), 200
+        except Exception as e:
+            return jsonify({"error": f"Error al obtener ahorros: {str(e)}"}), 500
+        
     data = request.get_json()
     ingresos = float(data.get("ingresos"))
     gastos = float(data.get("gastos"))
