@@ -1,7 +1,7 @@
 import { Link, useParams, useNavigate } from "react-router-dom"
-import { useState, useEffect } from "react" 
+import { useState, useEffect } from "react"
 import imagen from "../assets/image.png"
-import { auth } from '../main.jsx'; 
+import { auth } from '../main.jsx';
 import { GoogleAuthProvider, signInWithRedirect, getRedirectResult } from 'firebase/auth';
 
 const Signin = () => {
@@ -23,7 +23,7 @@ const Signin = () => {
             }
         };
 
-        handleFirebaseRedirect(); 
+        handleFirebaseRedirect();
     }, [navigate]);
 
 
@@ -93,7 +93,7 @@ const Signin = () => {
                         <h5 className="inter-texto text-start ms-2">Iniciar sesión</h5>
                         <form className="p-2" onSubmit={handleSubmit}>
                             <input type="text" id="username" value={formData.username} onChange={handleChange} placeholder="Usuario" className="form-control" autoComplete="username"></input>
-                            <input type="password" id="password" value={formData.password} onChange={handleChange}placeholder="Contraseña"className="form-control mt-2"autoComplete="current-password"/>
+                            <input type="password" id="password" value={formData.password} onChange={handleChange} placeholder="Contraseña" className="form-control mt-2" autoComplete="current-password" />
                             <button type="submit" className="btn w-100 mt-3 text-white"
                                 style={{ "backgroundColor": "black" }}>Continuar</button>
                         </form>
@@ -113,9 +113,9 @@ const Signin = () => {
 
                     </div>
                 </div>
-                <div className="row mt-auto">
+                <div className="row">
                     <div className="col mb-3">
-                        <p className="inter-texto text-center">¿Eres nuevo? Registrate <Link className="enlace" to="/registro">aquí</Link></p>
+                        <p className="inter-texto text-center text-dark">¿Eres nuevo? Registrate <Link className="enlace" to="/registro">aquí</Link></p>
                     </div>
                 </div>
             </div>
