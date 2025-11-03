@@ -93,13 +93,17 @@ const Signin = () => {
 
                         <div className="p-2">
                             <p className="inter-texto">{error_google}</p>
-                            <GoogleLogin
-                                className="w-100"
-                                onSuccess={handleGoogleSignIn}
-                                onError={() => {
-                                    Seterror_google("Error al iniciar sesion con Google");
-                                }}
-                            />
+                            <div className="w-100 d-flex justify-content-center">
+                                <div style={{ width: "100%" }}>
+                                    <GoogleLogin
+                                        width="100%"
+                                        onSuccess={handleGoogleSignIn}
+                                        onError={() => {
+                                        Seterror_google("Error al iniciar sesion con Google");
+                                    }}
+                                />
+                            </div>
+                            </div>
                         </div>
 
 
