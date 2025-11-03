@@ -105,6 +105,35 @@ def login():
     token = create_access_token(identity=username)
     return jsonify({"user":username, "token":token}), 200
 
+@api.route("/login_google", methods=["POST"])
+def auth_google():
+    from google.oauth2 import id_token
+    from google.auth.transport import requests
+    import os
+    from flask_jwt_extended import create_access_token
+    token = request.json.get("token")
+
+    CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+
+    try:
+        idinfo = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)
+
+        email_google = idinfo["email"]
+
+    
+        user = Persona.query.filter_by(email=email_google).first()
+
+        if not user:
+            return jsonify({"error":"No existe el usuario"}), 404
+
+        token = create_access_token(identity=user.username)
+        return jsonify({"token": token}), 200
+    except Exception as e:
+        return jsonify({"error": f"Error al inicar sesion con google: {str(e)}"}), 400
+
+
+
+
 @api.route('/emisiones', methods=["POST","PUT","GET"])
 @jwt_required()
 def emisiones():

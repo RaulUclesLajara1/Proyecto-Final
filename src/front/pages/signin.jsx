@@ -2,35 +2,14 @@ import { Link, useParams, useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
 import imagen from "../assets/image.png"
 import { auth } from '../main.jsx';
-import { GoogleAuthProvider, signInWithRedirect, getRedirectResult } from 'firebase/auth';
-
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 const Signin = () => {
     const navigate = useNavigate(); // use navigate
-
-    // --- BLOQUE PARA MANEJAR REDIRECCIÓN DE FIREBASE ---
-    useEffect(() => {
-        const handleFirebaseRedirect = async () => {
-            try {
-                const result = await getRedirectResult(auth);
-                if (result) {
-                    const user = result.user;
-                    console.log('Usuario autenticado con Google (vía redirección):', user);
-                    navigate("/registro-creado");
-                }
-            } catch (error) {
-                console.error("Error al manejar el resultado de la redirección de Google:", error);
-                alert(`Error al iniciar sesión con Google: ${error.message}`);
-            }
-        };
-
-        handleFirebaseRedirect();
-    }, [navigate]);
-
-
     const [formData, setFormData] = useState({
         username: "",
         password: "",
     });
+    const [error_google, Seterror_google] = useState("")
 
     const handleChange = (e) => {
         const { id, value } = e.target
@@ -68,13 +47,26 @@ const Signin = () => {
     };
 
     // FUNCIÓN PARA EL INICIO DE SESIÓN CON GOOGLE
-    const handleGoogleSignIn = async () => {
-        const provider = new GoogleAuthProvider();
+    const handleGoogleSignIn = async (credentialResponse) => {
         try {
-            await signInWithRedirect(auth, provider);
-        } catch (error) {
-            console.error("Error al iniciar la redirección con Google:", error);
-            alert(`Error al iniciar sesión con Google: ${error.message}`);
+            const token = credentialResponse.credential;
+            const url = import.meta.env.VITE_BACKEND_URL;
+            const res = await fetch(`${url}api/login_google`, {
+                method: "POST",
+                headers: { "Content-type": "application/json" },
+                body: JSON.stringify({ token })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                localStorage.setItem("jwt-token", data.token);
+                navigate('/registro-creado')
+            }
+            else {
+                Seterror_google(res.error)
+            }
+        }
+        catch (err) {
+            Seterror_google(err)
         }
     };
 
@@ -100,14 +92,13 @@ const Signin = () => {
 
 
                         <div className="p-2">
-                            <button
-                                type="button"
-                                onClick={handleGoogleSignIn}
-                                className="btn w-100 mt-2 text-black"
-                                style={{ "backgroundColor": "#00df47ff" }}
-                            >
-                                <i className="fab fa-google me-2"></i> Iniciar sesión con Google
-                            </button>
+                            <p className="inter-texto">{error_google}</p>
+                            <GoogleLogin
+                                onSuccess={handleGoogleSignIn}
+                                onError={() => {
+                                    Seterror_google("Error al iniciar sesion con Google");
+                                }}
+                            />
                         </div>
 
 

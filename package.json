@@ -54,8 +54,9 @@
 		]
 	},
 	"dependencies": {
-		"firebase": "^12.4.0",
+		"@react-oauth/google": "^0.12.2",
 		"chart.js": "^4.5.1",
+		"firebase": "^12.4.0",
 		"jwt-decode": "^4.0.0",
 		"prop-types": "^15.8.1",
 		"react": "^18.2.0",
