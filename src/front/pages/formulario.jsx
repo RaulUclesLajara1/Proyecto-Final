@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import ecovestLogo from '../assets/Ecovest.png';
 import imagen from "../assets/image3.png";
 
 const Formulario = () => {
@@ -103,9 +104,9 @@ const Formulario = () => {
             <div className="container">
                 <div className="text-start mb-4">
                     <div className="d-flex align-items-center justify-content-center mb-3">
-                        <img src={imagen}></img>
+                        <img src={ecovestLogo} alt="Logo Ecovest"className="d-block mx-auto" style={{ width: '200px', height: 'auto' }}/>
                     </div>
-                    <h3 className="fw-bold poppins-semibold">Cronfigura tu perfil de consumo</h3>
+                    <h3 className="fw-bold poppins-semibold">Configura tu perfil de consumo</h3>
                 </div>
 
                 <form onSubmit={handleSubmit}>

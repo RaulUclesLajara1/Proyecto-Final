@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import image from '../assets/image2.png';
+import image from '../assets/image.png';
 
 const Registro = () => {
     const [username, setUsername] = useState('');
