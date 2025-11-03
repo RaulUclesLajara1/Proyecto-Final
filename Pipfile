@@ -21,6 +21,9 @@ sqlalchemy = "*"
 flask-migrate = "*"
 flask-bcrypt = "*"
 flask-sqlalchemy = "*"
+google-auth = "*"
+google-auth-oauthlib = "*"
+google-auth-httplib2 = "*"
 
 [requires]
 python_version = "3.13"
