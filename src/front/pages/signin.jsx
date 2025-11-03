@@ -62,11 +62,11 @@ const Signin = () => {
                 navigate('/registro-creado')
             }
             else {
-                Seterror_google(res.error)
+                Seterror_google(data.error)
             }
         }
         catch (err) {
-            Seterror_google(err)
+            Seterror_google("Error de conexión o respuesta inesperada del servidor")
         }
     };
 
@@ -92,7 +92,7 @@ const Signin = () => {
 
 
                         <div className="p-2">
-                            <p className="inter-texto">{error_google}</p>
+                            <p className="inter-texto text-danger">{error_google}</p>
                             <div className="w-100 d-flex justify-content-center">
                                 <div style={{ width: "100%" }}>
                                     <GoogleLogin
