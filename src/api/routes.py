@@ -254,10 +254,9 @@ def ahorros():
                 return jsonify({"error": "No se encontró el ahorro para actualizar"}), 404
 
 
-            #En caso de querer actualizar se pasaría por parametro la cantidad a sumar o restar (valores positivos o negativos)
-            # ingresos = 0 o gastos = 0 en caso de que no se desee actualizar una de estas columnas
-            existing_ahorro.ingresos += ingresos
-            existing_ahorro.gastos += gastos
+
+            existing_ahorro.ingresos = ingresos
+            existing_ahorro.gastos = gastos
 
             db.session.commit()
 
