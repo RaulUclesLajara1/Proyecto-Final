@@ -101,7 +101,7 @@ const Dashboard = () => {
                             <img src={image4} />
                         </a>
                         <ul className="dropdown-menu p-2">
-                            <li><p className="inter-texto">Editar perfil</p></li>
+                            <li><p className="inter-texto" onClick={()=>navigate("/formulario/1")}>Editar perfil</p></li>
                             <li><p className="inter-texto" data-bs-toggle="modal" data-bs-target="#exampleModal"><i className="fa-solid fa-right-from-bracket me-2"></i>Cerrar sesion</p></li>
                             <li><p className="text-danger inter-texto" data-bs-toggle="modal" data-bs-target="#borrar">Borrar cuenta</p></li>
                         </ul>
