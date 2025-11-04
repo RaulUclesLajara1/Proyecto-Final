@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate} from 'react-router-dom';
 
 const RegistroCreado = () => {
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ const RegistroCreado = () => {
 
     }
     else if (data.message == "Formulario") {
-      navigate('/formulario');
+      navigate('/formulario/0');
     }
   }
   return (
