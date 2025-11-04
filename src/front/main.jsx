@@ -27,7 +27,7 @@ const Main = () => {
                         <Route path="/" element={<Signin />} />
                         <Route path="/registro" element={<Registro />} />
                         <Route element={<RutaProtegida />}>
-                            <Route path="/formulario" element={<Formulario />} />
+                            <Route path="/formulario/:id" element={<Formulario />} />
                             <Route path="/dashboard" element={<Dashboard />} />
                             <Route path="/registro-creado" element={<Registrocreado />} />
                         </Route>
