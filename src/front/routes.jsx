@@ -20,7 +20,7 @@ export const router = createBrowserRouter(
       <Route path="/" element={<Signin />} errorElement={<h1>Not found!</h1>} />
       <Route path="/registro" element={<Registro />} />
       <Route element={<RutaProtegida />}>
-        <Route path="/formulario" element={<Formulario />} />
+        <Route path="/formulario" element={<Formulario:id />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/registro-creado" element={<RegistroCreado />} />
       </Route>
