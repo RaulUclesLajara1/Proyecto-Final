@@ -1,6 +1,6 @@
 import { Link, useParams, useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
-import imagen from "../assets/image.png"
+import ecovestLogo from '../assets/Ecovest.png';
 import { auth } from '../main.jsx';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 const Signin = () => {
@@ -76,7 +76,8 @@ const Signin = () => {
             <div className="container vh-100 d-flex flex-column">
                 <div className="row">
                     <div className="col d-flex flex-column justify-content-center align-items-center">
-                        <img className="" src={imagen} alt="Logo"></img>
+                        <img src={ecovestLogo} alt="Logo Ecovest"className="d-block mx-auto" style={{ width: '250px', height: 'auto' }}/>
+
                         <h2 className="poppins-bold text-center">Transformamos tus<br />hábitos de consumo en decisiones<br /> <b className="texto-verde">sostenibles</b> sin que gastes más dinero</h2>
                     </div>
                 </div>
