@@ -1,9 +1,14 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect} from "react";
+
 import ecovestLogo from '../assets/Ecovest.png';
 import imagen from "../assets/image3.png";
 
 const Formulario = () => {
+    const base = import.meta.env.VITE_BACKEND_URL;
+    const token = localStorage.getItem('jwt-token');
+    const { id } = useParams();
+
     const [formData, setFormData] = useState({
         ingresos: "",
         gastos: "",
@@ -16,6 +21,7 @@ const Formulario = () => {
         transportepublico: "",
         reciclas: ""
     });
+
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
@@ -24,7 +30,48 @@ const Formulario = () => {
     const año = fecha.getFullYear();
     const mes = String(fecha.getMonth() + 1).padStart(2, '0');
     const formato = `${año}/${mes}`;
+    useEffect(() => {
+        if (id === "1") {
+            const fetchData = async () => {
+                try {
+                    const [resAhorros, resEmisiones] = await Promise.all([
+                        fetch(`${base}api/ahorros`, {
+                            headers: { 'Authorization': 'Bearer ' + token }
+                        }),
+                        fetch(`${base}api/emisiones`, {
+                            headers: { 'Authorization': 'Bearer ' + token }
+                        })
+                    ]);
 
+
+                    const dataAhorros = await resAhorros.json();
+                    const dataEmisiones = await resEmisiones.json();
+
+
+                    const ultimoAhorro = dataAhorros[dataAhorros.length - 1];
+                    const ultimaEmision = dataEmisiones[dataEmisiones.length - 1];
+
+                    setFormData(prev => ({
+                        ...prev,
+                        ingresos: ultimoAhorro?.ingresos || "",
+                        gastos: ultimoAhorro?.gastos || "",
+                        tipovehiculo: ultimaEmision?.tipo_vehiculo || "",
+                        consumovehiculo: ultimaEmision?.litros_combustible ? ultimaEmision.litros_combustible * 100 / (ultimaEmision?.kmsemana || 1) : "",
+                        kmsemana: ultimaEmision?.kmsemana || "",
+                        energiasrenovables: ultimaEmision?.energia_renovable || false,
+                        consumoelectrico: ultimaEmision?.kwh_consumidos || "",
+                        tipocalefaccion: ultimaEmision?.tipo_calefaccion || "",
+                    }));
+
+                } catch (err) {
+                    console.error(err);
+                    setError("No se pudieron cargar los datos previos");
+                }
+            };
+
+            fetchData();
+        }
+    }, [id, base, token]);
     // Maneja cambios en los campos del formulario
     const handleChange = (e) => {
         const { id, name, type, value, checked, files } = e.target;
@@ -49,13 +96,12 @@ const Formulario = () => {
         setSubmitting(true);
         setError(null);
         setSuccess(false);
-        const token = localStorage.getItem('jwt-token');
+        const metodo = id === "1" ? "PUT" : "POST";
 
         // Envía los datos del formulario al backend
         try {
-            const base = import.meta.env.VITE_BACKEND_URL || '';
             const res = await fetch(`${base}api/ahorros`, {
-                method: 'POST',
+                method: metodo,
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
                 body: JSON.stringify({ 'fecha': formato, 'ingresos': formData.ingresos, 'gastos': formData.gastos })
             });
@@ -74,9 +120,8 @@ const Formulario = () => {
         }
 
         try {
-            const base = import.meta.env.VITE_BACKEND_URL || '';
             const res = await fetch(`${base}api/emisiones`, {
-                method: 'POST',
+                method: metodo,
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
                 body: JSON.stringify({ 'fecha': formato, 'litros_combustible': formData.kmsemana * formData.consumovehiculo / 100, 'kwh_consumidos': formData.consumoelectrico, 'tipo_vehiculo': formData.tipovehiculo, 'tipo_calefaccion': formData.tipocalefaccion, 'energia_renovable': formData.energiasrenovables })
             });
@@ -104,7 +149,7 @@ const Formulario = () => {
             <div className="container">
                 <div className="text-start mb-4">
                     <div className="d-flex align-items-center justify-content-center mb-3">
-                        <img src={ecovestLogo} alt="Logo Ecovest"className="d-block mx-auto" style={{ width: '200px', height: 'auto' }}/>
+                        <img src={ecovestLogo} alt="Logo Ecovest" className="d-block mx-auto" style={{ width: '200px', height: 'auto' }} />
                     </div>
                     <h3 className="fw-bold poppins-semibold">Configura tu perfil de consumo</h3>
                 </div>
