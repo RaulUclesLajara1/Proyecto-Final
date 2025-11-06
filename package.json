@@ -19,12 +19,16 @@
 	},
 	"contributors": [
 		{
-			"name": "Alejandro Sanchez",
-			"url": "http://alesanchezr.com/"
+			"name": "Marina Fernandez",
+			"url": "https://github.com/Marinafdez-o"
 		},
 		{
-			"name": "Ignacio Cordoba",
-			"url": "http://github.com/nachovz"
+			"name": "Jose Zamora",
+			"url": "https://github.com/JoseZL"
+		}
+		,{
+			"name": "Raul Ucles",
+			"url": "https://github.com/RaulUclesLajara1"
 		}
 	],
 	"license": "ISC",
